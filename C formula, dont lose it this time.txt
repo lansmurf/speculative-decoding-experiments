@@ -1,0 +1,60 @@
+def calculate_c_value(p, q):
+    """
+    Calculate the C value based on the probabilities p and q.
+
+    The C value combines the agreement (absolute difference) and confidence (average probability) 
+    of the predictions from two models.
+
+    Args:
+    p (float): Probability from the first model.
+    q (float): Probability from the second model.
+
+    Returns:
+    float: The calculated C value.
+    """
+
+    # Calculate the base confidence as the average of p and q
+    base_confidence = (p + q) / 2
+
+    # Adjust the confidence based on the agreement (absolute difference)
+    adjusted_confidence = base_confidence * (1 - abs(p - q))
+
+    # The C value could be simply the adjusted confidence, or further adjustments can be made
+    # For simplicity, here we return the adjusted confidence as the C value
+    return adjusted_confidence
+
+
+I ALSO THOUGHT ABOUT GEOMETRIC DECAY FOR THE ENTIRE SEQUENCE SINCE THE CLOSER THE TOKEN IS TO THE START, THE MORE IMPORTANT IT IS
+
+
+def calculate_c_value_weighted(p, q, weight_p):
+    """
+    Calculate the C value using a weighted average to give more importance to probability p.
+
+    Args:
+    p (float): Probability from the better model.
+    q (float): Probability from the smaller model.
+    weight_p (float): Weight indicating the importance of p over q.
+
+    Returns:
+    float: The calculated C value.
+    """
+
+    # Calculate the base confidence as a weighted average of p and q
+    base_confidence = weight_p * p + (1 - weight_p) * q
+
+    # Adjust the confidence based on the agreement (absolute difference)
+    adjusted_confidence = base_confidence * (1 - abs(p - q))
+
+    return adjusted_confidence
+
+
+
+set up a heuristic like:
+
+base_confidence = weight_p * p + (1 - weight_p) * q
+whatever = base_confidence * (1 - abs(p - q))
+
+where p and q are big and small probs, weight_p is whatever importance you wanna give to p
+
+that is for every token right, so you calc average and variance for the entire seq. high enough avg and low var means seq could be "fixed"
